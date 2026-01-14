@@ -24,9 +24,7 @@ public class HomeMainServlet extends HttpServlet {
 		if (inputLimit==null) {
 			inputLimit="1";
 		}
-		if (inputColor==null) {
-			inputColor="inherit";
-		}
+
 		int dan =Integer.parseInt(inputDan);
 		int limit = Integer.parseInt(inputLimit);
 		response.getWriter().append(String.format("<div style=\"color:%s;\">==%d단==<br>",inputColor,dan));

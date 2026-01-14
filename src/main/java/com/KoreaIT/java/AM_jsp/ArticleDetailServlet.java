@@ -13,15 +13,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/list")
-public class ArticleListServlet extends HttpServlet {
+@WebServlet("/article/detail")
+public class ArticleDetailServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		response.setContentType("text/html;charset=UTF-8");
 
-		System.out.println(123);
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -41,14 +40,19 @@ public class ArticleListServlet extends HttpServlet {
 			response.getWriter().append("연결 성공");
 
 			DBUtil dbUtil = new DBUtil(request, response);
-
-			String sql = "SELECT * FROM article;";
+			String inputID = request.getParameter("id");
+			if (inputID==null) {
+				response.getWriter().append("id 정보 누락");
+				return;
+			}
+			int id =Integer.parseInt(inputID);
+			
+			String sql = "SELECT * FROM article where id="+id+";";
 
 			List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql);
 
-			/* response.getWriter().append(articleRows.toString()); */
 			request.setAttribute("articleRows", articleRows);
-			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
+			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
 
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);

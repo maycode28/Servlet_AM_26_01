@@ -1,15 +1,38 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
+
+<%
+int dan = Integer.parseInt(request.getParameter("dan"));
+int limit = Integer.parseInt(request.getParameter("limit"));
+String color = request.getParameter("color");
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>구구단 출력 Page</title>
+<style>
+	.color {
+		color: <%=color%>;
+	}
+</style>
 </head>
-<body>
-<h1>구구단 출력</h1>
-<h2>8단</h2>
-<div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Totam quam odit fugiat non a omnis nesciunt iusto doloremque quisquam provident! Nulla possimus voluptatem odio ab deserunt obcaecati dolor deleniti. Quibusdam.</div>
-</div>
+<body class="color">
+	<h1>구구단 출력</h1>
+
+	<h2>
+		==<%=dan%>단==
+	</h2>
+	<div>
+	<%
+		for(int i = 1; i <= limit; i++){
+	%>
+<%-- 	<div style="color:<%=color%>"><%=dan %> * <%=i %> = <%=dan * i %></div> --%>
+	<div><%=dan %> * <%=i %> = <%=dan * i %></div>
+	
+	<%
+		}
+	%>
+	</div>
 </body>
 </html>

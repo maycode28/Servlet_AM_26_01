@@ -15,13 +15,26 @@ public class HomeMainServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset:UTF-8");
-		String strId = request.getParameter("dan");
-		int dan =Integer.parseInt(strId);
-		response.getWriter().append(String.format("==%d단==<br>",dan));
+		String inputDan = request.getParameter("dan");
+		String inputLimit =request.getParameter("limit");
+		String inputColor=request.getParameter("color");
+		if (inputDan==null) {
+			inputDan="1";
+		}
+		if (inputLimit==null) {
+			inputLimit="1";
+		}
+		if (inputColor==null) {
+			inputColor="inherit";
+		}
+		int dan =Integer.parseInt(inputDan);
+		int limit = Integer.parseInt(inputLimit);
+		response.getWriter().append(String.format("<div style=\"color:%s;\">==%d단==<br>",inputColor,dan));
 
-		for (int i=1; i<=9;i++) {
+		for (int i=1; i<=limit;i++) {
 			response.getWriter().append(String.format("%d * %d = %d<br>",dan,i,dan*i));
 		}
+		response.getWriter().append("</div>");
 	}
 
 

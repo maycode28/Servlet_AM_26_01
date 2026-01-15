@@ -32,7 +32,7 @@ public class ArticleListServlet extends HttpServlet {
 
 		String url = "jdbc:mysql://127.0.0.1:3306/Servlet_AM_26_01?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
 		String user = "root";
-		String password = "";
+		String password = "1234";
 
 		Connection conn = null;
 

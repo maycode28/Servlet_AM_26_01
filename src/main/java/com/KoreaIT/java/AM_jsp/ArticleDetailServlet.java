@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.ServletException;
@@ -31,7 +30,7 @@ public class ArticleDetailServlet extends HttpServlet {
 
 		String url = "jdbc:mysql://127.0.0.1:3306/Servlet_AM_26_01?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
 		String user = "root";
-		String password = "";
+		String password = "1234";
 
 		Connection conn = null;
 
@@ -49,9 +48,9 @@ public class ArticleDetailServlet extends HttpServlet {
 			
 			String sql = "SELECT * FROM article where id="+id+";";
 
-			List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql);
+			Map<String, Object> articleRow = dbUtil.selectRow(conn, sql);
 
-			request.setAttribute("articleRows", articleRows);
+			request.setAttribute("articleRow", articleRow);
 			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
 
 		} catch (SQLException e) {

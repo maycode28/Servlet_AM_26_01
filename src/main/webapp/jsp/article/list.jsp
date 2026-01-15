@@ -21,8 +21,8 @@ List<Map<String, Object>> articleRows = (List<Map<String, Object>>) request.getA
 		for(int i = articleRows.size() - 1; i >= 0; i--){
 	%>
 
-		<li><%=articleRows.get(i).get("id")%> 번, <%=articleRows.get(i).get("regDate")%>,
-			<%=articleRows.get(i).get("title")%>, <%=articleRows.get(i).get("body")%></li>
+		<li><a href="http://localhost:8080/Servlet_AM_26_01/article/detail?id=<%=articleRows.get(i).get("id")%>"><%=articleRows.get(i).get("id")%> 번, <%=articleRows.get(i).get("regDate")%>,
+			<%=articleRows.get(i).get("title")%>, <%=articleRows.get(i).get("body")%></a></li>
 
 	<%
 		}

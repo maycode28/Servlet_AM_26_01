@@ -10,9 +10,11 @@ List<Map<String, Object>> articleRows = (List<Map<String, Object>>) request.getA
 <html>
 <head>
 <meta charset="UTF-8">
+
 <title>게시글 목록</title>
 </head>
 <body>
+<a href="../home/main">메인으로 이동</a>
 	<h1>게시글 목록</h1>
 
 	<ul>

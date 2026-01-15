@@ -14,6 +14,7 @@ int id = Integer.parseInt(request.getParameter("id"));
 <title><%=id%>번 게시글 상세</title>
 </head>
 <body>
+<a href="../home/main">메인으로 이동</a>
 	<h1><%=id%>번 게시글 상세</h1>
 	<%
 	if(articleRow.isEmpty()){

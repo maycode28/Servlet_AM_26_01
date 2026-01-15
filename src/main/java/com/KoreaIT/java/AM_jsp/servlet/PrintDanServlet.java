@@ -1,4 +1,4 @@
-package com.KoreaIT.java.AM_jsp;
+package com.KoreaIT.java.AM_jsp.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-@WebServlet("/home/main")
+@WebServlet("/home/print")
 public class PrintDanServlet extends HttpServlet {
 
   

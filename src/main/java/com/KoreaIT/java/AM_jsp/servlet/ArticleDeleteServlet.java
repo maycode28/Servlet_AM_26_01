@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import com.KoreaIT.java.AM_jsp.util.DBUtil;
@@ -16,15 +15,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/list")
-public class ArticleListServlet extends HttpServlet {
+@WebServlet("/article/doDelete")
+public class ArticleDeleteServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		response.setContentType("text/html;charset=UTF-8");
-
-		System.out.println(123);
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -42,32 +39,17 @@ public class ArticleListServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
 			response.getWriter().append("연결 성공");
-			
-			int cPage = 1;
-			String inputCPage= request.getParameter("cPage");
-			if(inputCPage!=null) {
-				cPage =Integer.parseInt(inputCPage);
-			}
-			SecSql sql = SecSql.from("SELECT COUNT(*)");
-			sql.append("FROM article;");
-			int articleCount = DBUtil.selectRowIntValue(conn, sql);
-			int articlePerPage = 10;
-			int limitFrom = articlePerPage*(cPage-1);
-			int pageCount=(int)Math.ceil(articleCount/(double)articlePerPage);
-			
 
-			sql = SecSql.from("SELECT * FROM article order by id desc");
-			sql.append("LIMIT ?, ?;", limitFrom, articlePerPage);
-			
+			int id = Integer.parseInt(request.getParameter("id"));
 
-			List<Map<String, Object>> articleRows = DBUtil.selectRows(conn, sql);
-			
-			
-			request.setAttribute("cPage", cPage);
-			request.setAttribute("articleCount", articleCount);
-			request.setAttribute("pageCount", pageCount);
-			request.setAttribute("articleRows", articleRows);
-			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
+			SecSql sql = SecSql.from("DELETE");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
+
+			DBUtil.delete(conn, sql);
+
+			response.getWriter()
+					.append(String.format("<script>alert('%d번 글이 삭제됨'); location.replace('list');</script>", id));
 
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);

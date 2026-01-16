@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import com.KoreaIT.java.AM_jsp.util.DBUtil;
+import com.KoreaIT.java.AM_jsp.util.SecSql;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -40,7 +41,6 @@ public class ArticleDetailServlet extends HttpServlet {
 			conn = DriverManager.getConnection(url, user, password);
 			response.getWriter().append("연결 성공");
 
-			DBUtil dbUtil = new DBUtil(request, response);
 			String inputID = request.getParameter("id");
 			if (inputID==null) {
 				response.getWriter().append("id 정보 누락");
@@ -48,9 +48,10 @@ public class ArticleDetailServlet extends HttpServlet {
 			}
 			int id =Integer.parseInt(inputID);
 			
-			String sql = "SELECT * FROM article where id="+id+";";
+			SecSql sql = new SecSql();
+			sql.append("SELECT * FROM article where id="+id+";");
 
-			Map<String, Object> articleRow = dbUtil.selectRow(conn, sql);
+			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
 
 			request.setAttribute("articleRow", articleRow);
 			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);

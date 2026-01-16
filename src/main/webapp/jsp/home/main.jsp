@@ -10,6 +10,9 @@
 <h1>메인 페이지</h1>
 <ul>
 	<li><a href="../article/list">리스트로 이동</a></li>
+	<li><a href="../article/write">글 쓰기</a></li>
+	<li><a href="../member/join">회원 가입</a></li>
+	
 </ul>
 </body>
 </html>

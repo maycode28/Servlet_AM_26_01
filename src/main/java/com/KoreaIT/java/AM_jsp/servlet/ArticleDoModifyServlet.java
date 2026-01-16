@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
 import com.KoreaIT.java.AM_jsp.util.DBUtil;
 import com.KoreaIT.java.AM_jsp.util.SecSql;
@@ -16,15 +14,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/list")
-public class ArticleListServlet extends HttpServlet {
+@WebServlet("/article/doModify")
+public class ArticleDoModifyServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		response.setContentType("text/html;charset=UTF-8");
-
-		System.out.println(123);
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -42,32 +38,21 @@ public class ArticleListServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
 			response.getWriter().append("연결 성공");
-			
-			int cPage = 1;
-			String inputCPage= request.getParameter("cPage");
-			if(inputCPage!=null) {
-				cPage =Integer.parseInt(inputCPage);
-			}
-			SecSql sql = SecSql.from("SELECT COUNT(*)");
-			sql.append("FROM article;");
-			int articleCount = DBUtil.selectRowIntValue(conn, sql);
-			int articlePerPage = 10;
-			int limitFrom = articlePerPage*(cPage-1);
-			int pageCount=(int)Math.ceil(articleCount/(double)articlePerPage);
-			
 
-			sql = SecSql.from("SELECT * FROM article order by id desc");
-			sql.append("LIMIT ?, ?;", limitFrom, articlePerPage);
-			
+			String title = request.getParameter("title");
+			String body = request.getParameter("body");
+			int id = Integer.parseInt(request.getParameter("id"));
 
-			List<Map<String, Object>> articleRows = DBUtil.selectRows(conn, sql);
-			
-			
-			request.setAttribute("cPage", cPage);
-			request.setAttribute("articleCount", articleCount);
-			request.setAttribute("pageCount", pageCount);
-			request.setAttribute("articleRows", articleRows);
-			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
+			SecSql sql = SecSql.from("UPDATE article");
+			sql.append("SET updateDate = NOW(),");
+			sql.append("title = ?,", title);
+			sql.append("`body` = ? ", body);
+			sql.append("where id= ?;", id);
+
+			DBUtil.update(conn, sql);
+
+			response.getWriter()
+					.append(String.format("<script>alert('%d번 글이 수정됨'); location.replace('detail?id=%d');</script>", id, id));
 
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);
@@ -82,4 +67,8 @@ public class ArticleListServlet extends HttpServlet {
 		}
 	}
 
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doGet(request, response);
+	}
 }

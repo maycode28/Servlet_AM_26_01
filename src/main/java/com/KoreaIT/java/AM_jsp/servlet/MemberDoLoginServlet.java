@@ -14,18 +14,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
-@WebServlet("/member/doJoin")
-public class MemberDoJoinServlet extends HttpServlet {
+@WebServlet("/member/doLogin")
+public class MemberDoLoginServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		response.setContentType("text/html;charset=UTF-8");
-		
+
 		String loginId = request.getParameter("loginId");
 		String loginPw = request.getParameter("loginPw");
-		String name = request.getParameter("name");
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -43,33 +43,33 @@ public class MemberDoJoinServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
 			response.getWriter().append("연결 성공");
-			
-			
-			SecSql sql = SecSql.from("SELECT COUNT(*) AS cnt");
+
+			SecSql sql = SecSql.from("SELECT *");
 			sql.append("FROM `member`");
 			sql.append("WHERE loginId = ?;", loginId);
 
-			boolean isJoinableLoginId = DBUtil.selectRowIntValue(conn, sql) == 0;
+			Map<String, Object> memberRow = DBUtil.selectRow(conn, sql);
 
-			if (isJoinableLoginId == false) {
+			if (memberRow.isEmpty()) {
 				response.getWriter().append(String
-						.format("<script>alert('%s는 이미 사용중!'); history.back();</script>", loginId));
+						.format("<script>alert('%s는 존재하지 않는 아이디 입니다.'); location.replace('../member/login')</script>", loginId));
 				return;
 			}
-			
-			sql = new SecSql();
-            sql.append("INSERT INTO member");
-            sql.append("SET regDate = NOW(),");
-            sql.append("updateDate = NOW(),");
-            sql.append("loginId = ?,", loginId);
-            sql.append("loginPw = ?,", loginPw);
-            sql.append("`name` = ?;", name);
-            DBUtil.insert(conn, sql);
-            
-            
-            response.getWriter().append(String.format("<script>alert('%s님 가입을축하합니다.'); location.replace('../home/main');</script>",name));
-			
 
+			if (memberRow.get("loginPw").equals(loginPw) == false) {
+				response.getWriter()
+						.append(String.format("<script>alert('비밀번호가 일치하지 않습니다.'); location.replace('../member/login')</script>"));
+				return;
+			}
+
+			HttpSession session = request.getSession();
+			session.setAttribute("loginedMember", memberRow);
+			session.setAttribute("loginedMemberId", memberRow.get("id"));
+			session.setAttribute("loginedMemberLoginId", memberRow.get("LoginId"));
+
+			response.getWriter().append(String.format(
+					"<script>alert('%s님 로그인!'); location.replace('../article/list');</script>", memberRow.get("name")));
+			
 		} catch (SQLException e) {
 			System.out.println("에러 : " + e);
 		} finally {
@@ -82,6 +82,7 @@ public class MemberDoJoinServlet extends HttpServlet {
 			}
 		}
 	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doGet(request, response);

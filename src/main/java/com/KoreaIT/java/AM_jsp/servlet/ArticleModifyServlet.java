@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/modify")
 public class ArticleModifyServlet extends HttpServlet {
@@ -48,22 +49,31 @@ public class ArticleModifyServlet extends HttpServlet {
 			conn = DriverManager.getConnection(url, user, password);
 			response.getWriter().append("연결 성공");
 			
-			SecSql sql = SecSql.from("SELECT COUNT(*)");
+			SecSql sql = new SecSql();
+			sql.append("SELECT *");
 			sql.append("FROM article");
-			sql.append("where id = ?;",id);
-			int articleCount = DBUtil.selectRowIntValue(conn, sql);
-			if (articleCount==0) {
+			sql.append("where id="+id+";");
+
+			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
+			
+			HttpSession session = request.getSession();
+			Map<String, Object> loginedMember = (Map<String, Object>) session.getAttribute("loginedMember");
+	
+			if(articleRow.isEmpty()) {
 				response.getWriter().append(String.format("<script>alert(%d+'번 글은 존재하지 않음'); location.replace('list');</script>",id));
-			}else if(articleCount==1){
-				sql = new SecSql();
-				sql.append("SELECT * FROM article where id=?;",id);
-
-				Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
-
-				request.setAttribute("articleRow", articleRow);
-				
-				request.getRequestDispatcher("/jsp/article/modify.jsp").forward(request, response);
+				return;
+			}else if(session.getAttribute("loginedMember")==null) {
+				response.getWriter().append("<script>alert('로그인이 필요합니다.'); location.replace('../member/login');</script>");
+				return;
+			}else if(articleRow.get("memberId")!=loginedMember.get("id")) {
+				response.getWriter().append("<script>alert('글의 작성자만 수정할 수 있습니다.'); location.replace('list');</script>");
+				return;
 			}
+			
+			request.setAttribute("articleRow", articleRow);
+			
+			request.getRequestDispatcher("/jsp/article/modify.jsp").forward(request, response);
+				
 			
             
 

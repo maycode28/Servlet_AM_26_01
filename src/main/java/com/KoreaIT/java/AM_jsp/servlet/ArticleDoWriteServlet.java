@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/doWrite")
 public class ArticleDoWriteServlet extends HttpServlet {
@@ -46,13 +47,17 @@ public class ArticleDoWriteServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
 			response.getWriter().append("연결 성공");
+			
+			HttpSession session = request.getSession();
+			
+			Map<String, Object> loginedMember = (Map<String, Object>) session.getAttribute("loginedMember");
 
 			
 			SecSql sql = new SecSql();
             sql.append("INSERT INTO article");
             sql.append("SET regDate = NOW(),");
             sql.append("updateDate = NOW(),");
-            sql.append("memberId = 1,");
+            sql.append("memberId = ?,",(int)loginedMember.get("id"));
             sql.append("title = ?,", title);
             sql.append("`body` = ?;", body);
 

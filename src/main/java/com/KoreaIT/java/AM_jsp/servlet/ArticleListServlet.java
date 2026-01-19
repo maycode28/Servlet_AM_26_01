@@ -55,8 +55,12 @@ public class ArticleListServlet extends HttpServlet {
 			int limitFrom = articlePerPage*(cPage-1);
 			int pageCount=(int)Math.ceil(articleCount/(double)articlePerPage);
 			
-
-			sql = SecSql.from("SELECT * FROM article order by id desc");
+			
+			sql = SecSql.from("SELECT a.id, a.regDate, a.updateDate, m.name, a.title, a.body");
+			sql.append("FROM article a");
+			sql.append("inner join `member` m");
+			sql.append("on a.memberId = m.id");
+			sql.append("order by a.id desc");
 			sql.append("LIMIT ?, ?;", limitFrom, articlePerPage);
 			
 
